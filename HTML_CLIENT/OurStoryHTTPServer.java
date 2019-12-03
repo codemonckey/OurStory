@@ -90,7 +90,7 @@ public class OurStoryHTTPServer implements Runnable {
 					
 				//here is the ip header
 				out.println("HTTP/1.1 501 Not Implemented");
-				out.println("Server: Java HTTP Server from SSaurel : 1.0");
+				out.println("Server: OurStory");
 				out.println("Date: " + new Date());
 				out.println("Content-type: " + "text/html");
 				out.println("Content-length: " + fileLength);
@@ -190,7 +190,7 @@ public class OurStoryHTTPServer implements Runnable {
 		byte[] fileData = readFileData(file, fileLength);
 		
 		out.println("HTTP/1.1 404 File Not Found");
-		out.println("Server: Java HTTP Server from SSaurel : 1.0");
+		out.println("Server: OurStory");
 		out.println("Date: " + new Date());
 		out.println("Content-type: " + "text/html");
 		out.println("Content-length: " + fileLength);
