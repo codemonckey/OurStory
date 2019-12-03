@@ -109,6 +109,7 @@ public class OurStoryHTTPServer implements Runnable {
 			}
 			else if (method.equals("POST")){
 				System.out.println(input);
+				
 			} else {
 
 				// we return the not supported file to the client
