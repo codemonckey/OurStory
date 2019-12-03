@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.text.SimpleDateFormat;
@@ -29,6 +30,11 @@ public class OurStoryHTTPServer implements Runnable {
   private Socket connect;
   public int storyTally = 10;
   public String currentFile;
+
+  //Used in queueing
+  public ArrayList<String> queue = new ArrayList<String>();
+  ArrayList<Integer> waitTime = new ArrayList<Integer>();
+
 
   public OurStoryHTTPServer(Socket c) {
     connect = c;
@@ -217,6 +223,64 @@ public class OurStoryHTTPServer implements Runnable {
 		catch(IOException e){
 		System.out.println(e);
 		}
+	}
+
+	//User presses contribute, is added to queue.
+	private void addToQueue(String userInfo)
+	{
+		queue.add(userInfo);
+	}
+
+	//User is pulled when he is through the queue, and it is his turn to write a sentence
+	private String pullFromQueue()
+	{
+		String a = queue.get(0);
+		for(int i = 0; i < queue.size() - 1; i++)
+		{
+			queue.set(i, queue.get(i+1));
+		}
+		queue.remove(queue.size()-1);			//remove last element
+		return a;
+	}
+
+	//Used when a user disconnects before exiting queue
+	private boolean removeFromQueue(String userInfo)
+	{
+		boolean found = false;
+		for(int i = 0; i < queue.size(); i++)
+		{
+			if(queue.get(i).equals(userInfo))
+			{
+				queue.set(i, queue.get(i+1));
+				found = true;
+			}
+			if(found == true)					//Need to update from index of removed element
+			{
+				queue.set(i, queue.get(i+1));
+				if(i == queue.size() - 1)		//want to break the loop 
+				{
+					queue.remove(queue.size()-1);
+					i = queue.size();
+				}
+			}
+		}
+		if(found == true)		//user was found and removed
+			return true;
+		else					//user wasn't found
+			return false;
+	}
+
+	//Used to send queue to front end?
+	private ArrayList<String> getQueue()
+	{
+		return queue;
+	}
+
+	//used to send users current position to the front end
+	private int getQueuePosition(String userInfo)
+	{
+		int a = queue.indexOf(userInfo);
+		return a;					//returns -1 if not found
 	}
 
 	private void randomizeFileName(){
