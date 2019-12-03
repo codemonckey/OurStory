@@ -15,14 +15,11 @@ import java.util.StringTokenizer;
 public class OurStoryHTTPServer implements Runnable {
 
   static final File WEB_ROOT = new File(".");
-  static final String DEFAULT_FILE = "one-sentence-story/public/index.html";
+  static final String DEFAULT_FILE = "index.html";
   static final String FILE_NOT_FOUND = "404.html";
   static final String METHOD_NOT_SUPPORTED = "not_supported.html";
   // port to listen connection 
   static final int PORT = 8080;
-
-  // verbose mode
-  static final boolean verbose = true;
 
   // Client Connection via Socket Class
   private Socket connect;
@@ -41,9 +38,7 @@ public class OurStoryHTTPServer implements Runnable {
       while (true) {
         OurStoryHTTPServer myServer = new OurStoryHTTPServer(serverConnect.accept());
 
-        if (verbose) {
           System.out.println("Connecton opened. (" + new Date() + ")");
-        }
 
         // create dedicated thread to manage the client connection
         Thread thread = new Thread(myServer);
@@ -79,10 +74,7 @@ public class OurStoryHTTPServer implements Runnable {
 			
 			// we support only GET and HEAD methods, we check
 			if (!method.equals("GET")  &&  !method.equals("HEAD")) {
-				if (verbose) {
-					System.out.println("501 Not Implemented : " + method + " method.");
-				}
-				
+
 				// we return the not supported file to the client
 				File file = new File(WEB_ROOT, METHOD_NOT_SUPPORTED);
 				int fileLength = (int) file.length();
@@ -128,10 +120,6 @@ public class OurStoryHTTPServer implements Runnable {
 					dataOut.flush();
 				}
 				
-				if (verbose) {
-					System.out.println("File " + fileRequested + " of type " + content + " returned");
-				}
-				
 			}
 			
 		} catch (FileNotFoundException fnfe) {
@@ -152,10 +140,6 @@ public class OurStoryHTTPServer implements Runnable {
 			} catch (Exception e) {
 				System.err.println("Error closing stream : " + e.getMessage());
 			} 
-			
-			if (verbose) {
-				System.out.println("Connection closed.\n");
-			}
 		}
 		
 		
@@ -180,7 +164,9 @@ public class OurStoryHTTPServer implements Runnable {
 	private String getContentType(String fileRequested) {
 		if (fileRequested.endsWith(".htm")  ||  fileRequested.endsWith(".html"))
 			return "text/html";
-		else
+		else if (fileRequested.endsWith(".css"))
+		return "text/css";
+			else
 			return "text/plain";
 	}
 	
@@ -200,9 +186,5 @@ public class OurStoryHTTPServer implements Runnable {
 		
 		dataOut.write(fileData, 0, fileLength);
 		dataOut.flush();
-		
-		if (verbose) {
-			System.out.println("File " + fileRequested + " not found");
-		}
 	}
 }
