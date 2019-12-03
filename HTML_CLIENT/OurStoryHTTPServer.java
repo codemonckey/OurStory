@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
 public class OurStoryHTTPServer implements Runnable {
 
   static final File WEB_ROOT = new File(".");
-  static final String DEFAULT_FILE = "index.html";
+  static final String DEFAULT_FILE = "one-sentence-story/public/index.html";
   static final String FILE_NOT_FOUND = "404.html";
   static final String METHOD_NOT_SUPPORTED = "not_supported.html";
   // port to listen connection 
@@ -165,7 +165,9 @@ public class OurStoryHTTPServer implements Runnable {
 		if (fileRequested.endsWith(".htm")  ||  fileRequested.endsWith(".html"))
 			return "text/html";
 		else if (fileRequested.endsWith(".css"))
-		return "text/css";
+			return "text/css";
+		else if (fileRequested.endsWith(".js"))
+			return "text/js";
 			else
 			return "text/plain";
 	}

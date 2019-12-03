@@ -7,9 +7,6 @@
     border: black 2px;
 }
 
-textarea {
-    border: none;
-    border-collapse: collapse;
-    border-right: #000 1px solid;
-    
+h1 {
+    color: red;
 }
