@@ -11,6 +11,14 @@ te.addEventListener("click", function() {
     location.href = "http://localhost:8080/public/contribute.html"
 });
 
+
+const hs = document.getElementById("goHome");
+
+hs.addEventListener("click", function() {
+    location.href = "http://localhost:8080/public/index.html"
+});
+
+
 const osc = document.getElementById("oldStoriesClicked");
 osc.addEventListener("click", function() {
     location.href = "http://localhost:8080/public/oldStories.html"
