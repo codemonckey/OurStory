@@ -19,3 +19,21 @@ el.addEventListener("click", function() {
     location.href = "http://localhost:8080/public/test.html"
 });
 
+// Returns a Promise that resolves after "ms" Milliseconds
+function timer(ms) {
+    return new Promise(res => setTimeout(res, ms));
+   }
+   
+   async function enterQueue () { // We need to wrap the loop into an async function for this to work
+     while(waiting) {
+         getQueue();
+       await timer(3000); // then the created Promise can be awaited
+     }
+     
+   }
+   
+   load();
+
+   function getQueue(){
+    
+   }
