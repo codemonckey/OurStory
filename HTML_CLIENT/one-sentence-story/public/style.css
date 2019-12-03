@@ -1,0 +1,15 @@
+#enterStory {
+    border: black 2px;
+}
+
+#title {
+    border-radius: 5px;
+    border: black 2px;
+}
+
+textarea {
+    border: none;
+    border-collapse: collapse;
+    border-right: #000 1px solid;
+    
+}
