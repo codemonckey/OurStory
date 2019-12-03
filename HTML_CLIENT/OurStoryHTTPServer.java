@@ -106,7 +106,7 @@ public class OurStoryHTTPServer implements Runnable {
 				}
 				
 			}
-			else if (method.equals("POST"){
+			else if (method.equals("POST")){
 				System.out.println(input);
 			} else {
 
