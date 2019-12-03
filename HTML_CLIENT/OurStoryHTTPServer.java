@@ -74,13 +74,15 @@ public class OurStoryHTTPServer implements Runnable {
 			String input = in.readLine();
 			// we parse the request with a string tokenizer
 			StringTokenizer parse = new StringTokenizer(input);
+
 			if(!method.equals("POST")){
 			String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
 			// we get file requested
 			fileRequested = parse.nextToken().toLowerCase();
+
 			}
 			// we support only GET and HEAD methods, we check
-			if (method.equals("GET")  &&  method.equals("HEAD")) {
+			if (method.equals("GET")  ||  method.equals("HEAD")) {
 				// GET or HEAD method
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
