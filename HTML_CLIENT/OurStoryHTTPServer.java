@@ -178,15 +178,9 @@ public class OurStoryHTTPServer implements Runnable {
 			return "text/html";
 		else if (fileRequested.endsWith(".css"))
 			return "text/css";
-<<<<<<< HEAD
 			else if (fileRequested.endsWith(".js"))
 			return "text/js";
 		else
-=======
-		else if (fileRequested.endsWith(".js"))
-			return "text/js";
-			else
->>>>>>> 0f8f3b91be6767e1a8183cc6802be4d2546e0424
 			return "text/plain";
 	}
 	
