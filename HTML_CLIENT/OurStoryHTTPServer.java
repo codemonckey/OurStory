@@ -79,29 +79,7 @@ public class OurStoryHTTPServer implements Runnable {
 			fileRequested = parse.nextToken().toLowerCase();
 			
 			// we support only GET and HEAD methods, we check
-			if (!method.equals("GET")  &&  !method.equals("HEAD")) {
-
-				// we return the not supported file to the client
-				File file = new File(WEB_ROOT, METHOD_NOT_SUPPORTED);
-				int fileLength = (int) file.length();
-
-				//read content to return to client
-				byte[] fileData = readFileData(file, fileLength);
-					
-				//here is the ip header
-				out.println("HTTP/1.1 501 Not Implemented");
-				out.println("Server: OurStory");
-				out.println("Date: " + new Date());
-				out.println("Content-type: " + "text/html");
-				out.println("Content-length: " + fileLength);
-				out.println();
-				out.flush(); 
-
-
-				dataOut.write(fileData, 0, fileLength);
-				dataOut.flush();
-				
-			} else {
+			if (method.equals("GET")  &&  method.equals("HEAD")) {
 				// GET or HEAD method
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
@@ -126,6 +104,31 @@ public class OurStoryHTTPServer implements Runnable {
 					dataOut.write(fileData, 0, fileLength);
 					dataOut.flush();
 				}
+				
+			}
+			else if (method.equals("POST"){
+				System.out.println(input);
+			} else {
+
+				// we return the not supported file to the client
+				File file = new File(WEB_ROOT, METHOD_NOT_SUPPORTED);
+				int fileLength = (int) file.length();
+
+				//read content to return to client
+				byte[] fileData = readFileData(file, fileLength);
+					
+				//here is the ip header
+				out.println("HTTP/1.1 501 Not Implemented");
+				out.println("Server: OurStory");
+				out.println("Date: " + new Date());
+				out.println("Content-type: " + "text/html");
+				out.println("Content-length: " + fileLength);
+				out.println();
+				out.flush(); 
+
+
+				dataOut.write(fileData, 0, fileLength);
+				dataOut.flush();
 				
 			}
 			
