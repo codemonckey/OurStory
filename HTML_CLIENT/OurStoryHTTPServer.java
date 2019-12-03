@@ -31,7 +31,7 @@ public class OurStoryHTTPServer implements Runnable {
   public String currentFile;
 
   public OurStoryHTTPServer(Socket c) {
-    connect = c;
+	connect = c;
   }
 
   public static void main(String[] args) {
@@ -45,7 +45,7 @@ public class OurStoryHTTPServer implements Runnable {
         OurStoryHTTPServer myServer = new OurStoryHTTPServer(serverConnect.accept());
 
           System.out.println("Connecton opened. (" + new Date() + ")");
-
+			
         // create dedicated thread to manage the client connection
         Thread thread = new Thread(myServer);
         thread.start();
@@ -58,14 +58,15 @@ public class OurStoryHTTPServer implements Runnable {
 
 	@Override
 	public void run() {
-
-    BufferedReader in = null; 
-    PrintWriter out = null; 
-    BufferedOutputStream dataOut = null;
-		String fileRequested = null;
 		
+		String fileRequested = null;
+		BufferedReader in = null; 
+		PrintWriter out = null; 
+		BufferedOutputStream dataOut = null;
+
 		try {
-      //setting up connections through socket and writer
+
+ 		    //setting up connections through socket and writer
 			in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
 			out = new PrintWriter(connect.getOutputStream());
 			dataOut = new BufferedOutputStream(connect.getOutputStream());
@@ -92,7 +93,6 @@ public class OurStoryHTTPServer implements Runnable {
 				
 				if (method.equals("GET")) { // GET method so we return content
 					byte[] fileData = readFileData(file, fileLength);
-					
 					// send HTTP Headers
 					out.println("HTTP/1.1 200 OK");
 					out.println("Server: Java HTTP Server");
@@ -100,6 +100,7 @@ public class OurStoryHTTPServer implements Runnable {
 					out.println("Content-type: " + content);
 					out.println("Content-length: " + fileLength);
 					out.println(); // blank line between headers and content, very important !
+					
 					out.flush(); // flush character output stream buffer
 					
 					dataOut.write(fileData, 0, fileLength);
@@ -108,10 +109,29 @@ public class OurStoryHTTPServer implements Runnable {
 				
 			}
 			else if (method.equals("POST")){
-				System.out.println(input);
+				String temp = in.readLine();
 				
-			} else {
+				while(temp.length()>0) {
+					System.out.println(temp);
+					temp = in.readLine();
+				}
+				System.out.println("-----------buffer----------\n");
+				temp = in.readLine();
+				System.out.println(temp);
+				while(!temp.endsWith("ENDOFFILE")) {
+					System.out.println(temp);
+					temp = in.readLine();
+				}				
+					out.println("HTTP/1.1 200 OK");
+					out.println("Server: Java HTTP Server");
+					out.println("Date: " + new Date());
+					out.println("Content-type: " + "text/html");
+					out.println(); // blank line between headers and content, very important !
 
+
+					out.flush(); // flush character output stream buffer
+			} 
+			else {
 				// we return the not supported file to the client
 				File file = new File(WEB_ROOT, METHOD_NOT_SUPPORTED);
 				int fileLength = (int) file.length();
@@ -131,7 +151,6 @@ public class OurStoryHTTPServer implements Runnable {
 
 				dataOut.write(fileData, 0, fileLength);
 				dataOut.flush();
-				
 			}
 			
 		} catch (FileNotFoundException fnfe) {
