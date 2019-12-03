@@ -1,0 +1,12 @@
+#enterStory {
+    border: black 2px;
+}
+
+#title {
+    border-radius: 5px;
+    border: black 2px;
+}
+
+h1 {
+    color: red;
+}
