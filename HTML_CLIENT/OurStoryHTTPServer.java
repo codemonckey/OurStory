@@ -23,10 +23,10 @@ public class OurStoryHTTPServer implements Runnable {
 	static final String FILE_NOT_FOUND = "404.html";
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 	public String fileRequested = null;
-	public BufferedReader in = null;
-	public PrintWriter out = null;
-	public BufferedOutputStream dataOut = null;
-	public boolean waiting = false;
+	private BufferedReader in = null;
+	private PrintWriter out = null;
+	private BufferedOutputStream dataOut = null;
+	private static boolean waiting = true;
 	// port to listen connection 
 	static final int PORT = 8080;
 
@@ -67,7 +67,7 @@ public class OurStoryHTTPServer implements Runnable {
 	}
 
 	@Override
-	public synchronized void run() {
+	public void run() {
 
 
 		try {
@@ -85,13 +85,21 @@ public class OurStoryHTTPServer implements Runnable {
 			String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
 			// we get file requested
 			fileRequested = parse.nextToken().toLowerCase();
-			System.out.println(fileRequested);
-			if(waiting == true && fileRequested.equals("/public/contribute.html")){
-				getReq("/public/contributeStyle.css");
-			}
-			else{
-				if (fileRequested.equals("/public/contribute.html"))
-				fileRequested = "/public/loading.html";
+			System.out.println(waiting);
+			if(fileRequested.equals("/public/contribute.html")){
+				try{
+						if(waiting == true){
+							nextReq(fileRequested);
+						}
+						else{
+						try{
+							nextReq("/public/loading.html");
+						return;
+						}
+						catch(IOException e){System.out.println(e);}
+					}
+				}
+				catch(Exception e){System.out.println(e);}
 			}
 			// we support only GET and HEAD methods, we check
 			if (method.equals("GET") || method.equals("HEAD")) {
@@ -99,25 +107,24 @@ public class OurStoryHTTPServer implements Runnable {
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
 				}
+				if (fileRequested.endsWith("waiting")){
+					BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
+					String temp = "";
+					if(waiting == true){temp = "true";}else{temp = "false";}
+					writer.write(temp);
+					writer.close();
+				}
 
 				File file = new File(WEB_ROOT, fileRequested);
 				int fileLength = (int) file.length();
 				String content = getContentType(fileRequested);
 
 				if (method.equals("GET")) { // GET method so we return content
-					if (fileRequested.equals("/public/contributeStyle.css")) {
-						try {
-							getReq("/public/contributeStyle.css");
-							waiting = true;
-						} catch (Exception e) {
-							System.out.println("here1");
-						}
-					} else {
+
 						try {
 							getReq(fileRequested);
 						} catch (Exception e) {
 							System.out.println(e);
-						}
 					}
 				}
 
@@ -140,6 +147,8 @@ public class OurStoryHTTPServer implements Runnable {
 				out.println("Content-type: " + "text/html");
 				out.println();
 				out.flush(); // flush character output stream buffer
+				
+				waiting=true;
 			} else {
 				// we return the not supported file to the client
 				File file = new File(WEB_ROOT, METHOD_NOT_SUPPORTED);
@@ -267,10 +276,6 @@ public class OurStoryHTTPServer implements Runnable {
 		}
 	}
 
-	public static synchronized void upNext() {
-		return;
-	}
-
 	public synchronized void getReq(String fileTemp) throws Exception {
 
 		File file = new File(WEB_ROOT, fileTemp);
@@ -286,5 +291,12 @@ public class OurStoryHTTPServer implements Runnable {
 		out.flush(); // flush character output stream buffer
 		dataOut.write(fileData, 0, fileLength);
 		dataOut.flush();
+	}
+
+	public synchronized void nextReq(String fileTemp) throws Exception {
+		
+		waiting = false;
+		System.out.println(fileTemp + "imright here");
+		getReq(fileTemp);
 	}
 }
