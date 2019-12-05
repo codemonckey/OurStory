@@ -130,6 +130,7 @@ public class OurStoryHTTPServer implements Runnable {
 					temp = in.readLine();
 					temp = temp.substring(0, temp.length()-9);
 					System.out.println(temp);
+					lastString = temp;
 					createHTML(temp);
 					iterateTally();
 					}
@@ -304,4 +305,6 @@ public class OurStoryHTTPServer implements Runnable {
 
 		getReq(fileTemp);
 	}
+
+	public synchronized void createText(String )
 }
