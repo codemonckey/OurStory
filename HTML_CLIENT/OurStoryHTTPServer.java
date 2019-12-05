@@ -1,4 +1,5 @@
 import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,14 +27,14 @@ public class OurStoryHTTPServer implements Runnable {
 	private BufferedReader in = null;
 	private PrintWriter out = null;
 	private BufferedOutputStream dataOut = null;
-	private static boolean waiting = true;
+	private BufferedInputStream dataIn = null;
 	// port to listen connection 
 	static final int PORT = 8080;
-
 	// Client Connection via Socket Class
 	private Socket connect;
 	public static int storyTally = 10;
-	public String currentFile;
+	public static String currentFile;
+	public static String lastString;
 
 	public OurStoryHTTPServer(Socket c) {
 		connect = c;
@@ -41,6 +42,7 @@ public class OurStoryHTTPServer implements Runnable {
 			in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
 			out = new PrintWriter(connect.getOutputStream());
 			dataOut = new BufferedOutputStream(connect.getOutputStream());
+			dataIn = new BufferedInputStream(connect.getInputStream());
 		} catch (IOException e) {
 			System.out.println("Problem creating server");
 		}
@@ -51,6 +53,9 @@ public class OurStoryHTTPServer implements Runnable {
 		try {
 			ServerSocket serverConnect = new ServerSocket(PORT);
 			System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");
+			BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
+			writer.write("true");
+			writer.close();
 			// we listen until user halts server execution
 			while (true) {
 				OurStoryHTTPServer myServer = new OurStoryHTTPServer(serverConnect.accept());
@@ -67,7 +72,7 @@ public class OurStoryHTTPServer implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
 
 
 		try {
@@ -85,19 +90,9 @@ public class OurStoryHTTPServer implements Runnable {
 			String method = parse.nextToken().toUpperCase(); // we get the HTTP method of the client
 			// we get file requested
 			fileRequested = parse.nextToken().toLowerCase();
-			System.out.println(waiting);
 			if(fileRequested.equals("/public/contribute.html")){
 				try{
-						if(waiting == true){
 							nextReq(fileRequested);
-						}
-						else{
-						try{
-							nextReq("/public/loading.html");
-						return;
-						}
-						catch(IOException e){System.out.println(e);}
-					}
 				}
 				catch(Exception e){System.out.println(e);}
 			}
@@ -106,13 +101,6 @@ public class OurStoryHTTPServer implements Runnable {
 				// GET or HEAD method
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
-				}
-				if (fileRequested.endsWith("waiting")){
-					BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
-					String temp = "";
-					if(waiting == true){temp = "true";}else{temp = "false";}
-					writer.write(temp);
-					writer.close();
 				}
 
 				File file = new File(WEB_ROOT, fileRequested);
@@ -129,26 +117,44 @@ public class OurStoryHTTPServer implements Runnable {
 				}
 
 			} else if (method.equals("POST")) {
-				String temp = in .readLine();
+				try {
+				String temp = in.readLine();
 
 				while (temp.length() > 0) {
-					temp = in .readLine();
+					temp = in.readLine();
 				}
 				System.out.println("-----------buffer----------\n");
-				temp = in .readLine();
-				System.out.println(temp);
-				while (!temp.endsWith("ENDOFFILE")) {
+				
+				
+				try{
+					temp = in.readLine();
 					System.out.println(temp);
-					temp = in .readLine();
-				}
+					createHTML(temp);
+					iterateTally();
+					}
+					catch(Exception e){System.out.println(e);}
+					
+				BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
+				writer.write("true");
+				writer.close();
+
+
+				// while (!temp.endsWith("ENDOFFILE")) {
+				// 	System.out.println(temp);
+				// 	temp = in.readLine();
+				// }						
+
 				out.println("HTTP/1.1 200 OK");
 				out.println("Server: Java HTTP Server");
 				out.println("Date: " + new Date());
-				out.println("Content-type: " + "text/html");
-				out.println();
-				out.flush(); // flush character output stream buffer
-				
-				waiting=true;
+		}
+		catch(Exception e){System.out.println(e);}
+				// out.println("HTTP/1.1 200 OK");
+				// out.println("Server: Java HTTP Server");
+				// out.println("Date: " + new Date());
+				// out.println("Content-type: " + "text/html");
+				// out.println();
+				// out.flush(); // flush character output stream buffer
 			} else {
 				// we return the not supported file to the client
 				File file = new File(WEB_ROOT, METHOD_NOT_SUPPORTED);
@@ -247,36 +253,27 @@ public class OurStoryHTTPServer implements Runnable {
 
 	private void createHTML(String updated) {
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(currentFile));
+			if (storyTally == 10){randomizeFileName();}
+				BufferedWriter bw = new BufferedWriter(new FileWriter("public/stories/"+ currentFile));
+		
 			if (storyTally == 10) {
 				bw.write("<html><head><title>" + updated + "</title></head><body><p>");
 			} else if (storyTally == 0) {
-				bw.write(updated + "</p></body></html>");
+				bw.append(updated + "</p></body></html>");
+				bw.close();
 			} else
-				bw.write(updated);
-			bw.close();
+				bw.append(updated);
 		} catch (IOException e) {
 			System.out.println(e);
 		}
 	}
 
 	private void randomizeFileName() {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("File-ddMMyy-hhmmss.SSS.txt");
-		currentFile = new File(simpleDateFormat.format(new Date())).getName();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyy-hhmmss.SSS");
+		currentFile = new File(simpleDateFormat.format(new Date()) + ".txt").getName();
 	}
 
-	private static synchronized void inputHandler() {
-
-		if (storyTally == 0) {
-			iterateTally();
-		} else if (storyTally == 10) {
-
-		} else {
-
-		}
-	}
-
-	public synchronized void getReq(String fileTemp) throws Exception {
+	public void getReq(String fileTemp) throws Exception {
 
 		File file = new File(WEB_ROOT, fileTemp);
 		int fileLength = (int) file.length();
@@ -295,8 +292,10 @@ public class OurStoryHTTPServer implements Runnable {
 
 	public synchronized void nextReq(String fileTemp) throws Exception {
 		
-		waiting = false;
-		System.out.println(fileTemp + "imright here");
+					BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
+					writer.write("false");
+					writer.close();
+
 		getReq(fileTemp);
 	}
 }

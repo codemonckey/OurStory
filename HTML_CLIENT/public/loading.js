@@ -6,17 +6,16 @@ hs.addEventListener("click", function () {
 
 setInterval(function () {
     var xhr = new XMLHttpRequest();
-    var response
     xhr.open('GET', "waiting.txt", true);
     xhr.send();
-    
-    if (xhr.readyState == 2) {
-        response = xhr.response;
-        alert(response)
-    }
 
+xhr.onreadystatechange=function(){
+    if(this.readyState==4 && this.status==200){
+    response = xhr.responseText;
     if(response == "true"){
     location.href = "http://localhost:8080/public/contribute.html";
     }
+}
+}
 },3000);
 window.onload = setInterval;
