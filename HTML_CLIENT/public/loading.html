@@ -1,73 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-  <div style="text-align: center;">
-  <head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="stylesheet" href="public/style.css"/>
+    <link rel="stylesheet" href="style.css"/>
 
-    <header>
-        <img src="http://jshirk.com/blog/wp-content/uploads/2013/09/one-sentence.jpg"  width="300" height="200">
-    </header>  
-  </head>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        margin: auto;
+      }
+      /* Safari */
+      @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      </style>
+      </head>
+
+      <style> 
+      button {
+        box-shadow: 3px 4px 0px 0px #899599;
+        background:linear-gradient(to bottom, #ededed 5%, #bab1ba 100%);
+        background-color:#ededed;
+        border-radius:15px;
+        border:1px solid #d6bcd6;
+        display:inline-block;
+        cursor:pointer;
+        color:red;
+        font-family:Arial;
+        font-size:17px;
+        padding:7px 25px;
+        text-decoration:none;
+        text-shadow:0px 1px 0px #e1e2ed;
+        }
+        </style>
 
 
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-.loader {
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
-  width: 120px;
-  height: 120px;
-  -webkit-animation: spin 2s linear infinite; /* Safari */
-  animation: spin 2s linear infinite;
-  margin: auto;
-}
-/* Safari */
-@-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
-</head>
-<body>
+        <div style="text-align: center;">
 
-<h2>You are waiting in the queue, your turn is coming up!</h2>
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width,initial-scale=1.0">
+            <link rel="stylesheet" href="public/style.css"/>
+            <header>
+              <img src="http://jshirk.com/blog/wp-content/uploads/2013/09/one-sentence.jpg"  width="300" height="200">
+            </header>
+          </head>
 
-<div class="loader"></div>
-
-<br>
-<br>
-<style>
-
-button {
-  box-shadow: 3px 4px 0px 0px #899599;
-background:linear-gradient(to bottom, #ededed 5%, #bab1ba 100%);
-background-color:#ededed;
-border-radius:15px;
-border:1px solid #d6bcd6;
-display:inline-block;
-cursor:pointer;
-color:red;
-font-family:Arial;
-font-size:17px;
-padding:7px 25px;
-text-decoration:none;
-text-shadow:0px 1px 0px #e1e2ed;
-}
-</style>
-
-<button id="goHome" class="button" style="width:300px;height:120px";><textButton></textButton>Home Screen</textButton></button>
-
-      <script src="public/main.js"></script>    
-  </body>
-</div>
-</html>
+          <body>
+            <h2>You are waiting in the queue, your turn is coming up!</h2>
+            <div class="loader"></div>
+            <br>
+            <br>
+            <button id="goHome" class="button" style="width:300px;height:120px" onclick="javascript:history.back()";><textButton>Home Screen</textButton></button>
+            
+          </body>
+        </div>
+        </html>
+      <script src="loading.js"></script>    
