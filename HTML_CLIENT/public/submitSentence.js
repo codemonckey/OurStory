@@ -25,5 +25,5 @@ sendSentence.addEventListener("click", function() {
     xhr.send(document.getElementById("newSentence").value +  "ENDOFFILE");
 
     location.href = "http://localhost:8080"
-
+    
 });
