@@ -27,7 +27,7 @@ public class OurStoryHTTPServer implements Runnable {
 	private BufferedReader in = null;
 	private PrintWriter out = null;
 	private BufferedOutputStream dataOut = null;
-	private BufferedInputStream dataIn = null;
+
 	// port to listen connection 
 	static final int PORT = 8080;
 	// Client Connection via Socket Class
@@ -35,14 +35,14 @@ public class OurStoryHTTPServer implements Runnable {
 	public static int storyTally = 10;
 	public static String currentFile;
 	public static String lastString;
-
+	
 	public OurStoryHTTPServer(Socket c) {
 		connect = c;
 		try {
 			in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
 			out = new PrintWriter(connect.getOutputStream());
 			dataOut = new BufferedOutputStream(connect.getOutputStream());
-			dataIn = new BufferedInputStream(connect.getInputStream());
+
 		} catch (IOException e) {
 			System.out.println("Problem creating server");
 		}
@@ -128,12 +128,13 @@ public class OurStoryHTTPServer implements Runnable {
 				
 				try{
 					temp = in.readLine();
+					temp = temp.substring(0, temp.length()-9);
 					System.out.println(temp);
 					createHTML(temp);
 					iterateTally();
 					}
 					catch(Exception e){System.out.println(e);}
-					
+
 				BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
 				writer.write("true");
 				writer.close();
@@ -251,26 +252,31 @@ public class OurStoryHTTPServer implements Runnable {
 		dataOut.flush();
 	}
 
-	private void createHTML(String updated) {
+	private static synchronized void createHTML(String updated) {
 		try {
-			if (storyTally == 10){randomizeFileName();}
-				BufferedWriter bw = new BufferedWriter(new FileWriter("public/stories/"+ currentFile));
-		
-			if (storyTally == 10) {
+			if (storyTally == 10){setFileName();}
+			BufferedWriter bw = new BufferedWriter(new FileWriter(currentFile, true));
+			
+			if (storyTally == 10){randomizeFileName();
 				bw.write("<html><head><title>" + updated + "</title></head><body><p>");
 			} else if (storyTally == 0) {
 				bw.append(updated + "</p></body></html>");
-				bw.close();
-			} else
-				bw.append(updated);
+			} else{
+				bw.append(" " + updated);
+			}
+			bw.close();
 		} catch (IOException e) {
 			System.out.println(e);
 		}
 	}
 
-	private void randomizeFileName() {
+	private static void setFileName(){
+		currentFile = "public/stories/" + randomizeFileName();
+	}
+
+	private static String randomizeFileName() {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyy-hhmmss.SSS");
-		currentFile = new File(simpleDateFormat.format(new Date()) + ".txt").getName();
+		return new File(simpleDateFormat.format(new Date()) + ".txt").getName();
 	}
 
 	public void getReq(String fileTemp) throws Exception {
