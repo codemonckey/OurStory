@@ -306,5 +306,5 @@ public class OurStoryHTTPServer implements Runnable {
 		getReq(fileTemp);
 	}
 
-	public synchronized void createText(String )
+	// public synchronized void createText(String )
 }
