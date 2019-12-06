@@ -1,2 +1,2 @@
-The Story is titled:
-Here is the title
+Enter a Title for this story!
+A good one will do

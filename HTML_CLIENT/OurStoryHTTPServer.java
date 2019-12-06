@@ -27,7 +27,7 @@ public class OurStoryHTTPServer implements Runnable {
 	private BufferedReader in = null;
 	private PrintWriter out = null;
 	private BufferedOutputStream dataOut = null;
-	private static final int storyLength = 8;
+	private static final int storyLength = 3;
 
 	// port to listen connection 
 	static final int PORT = 8080;
@@ -102,11 +102,15 @@ public class OurStoryHTTPServer implements Runnable {
 								writer.close();
 							}else if(storyTally == storyLength-1){
 								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
-								writer.write("The Story is titled:\n"+ lastString);
+								writer.write("Enter the opening sentence to the Story titled:\n"+ lastString);
+								writer.close();
+							}else if(storyTally == 0){
+								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
+								writer.write("Enter this stories last sentence:\n"+ lastString);
 								writer.close();
 							}else{
 								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
-								writer.write("Previous Sentence:\n" + lastString);
+								writer.write("Enter a sentence following this one:\n" + lastString);
 								writer.close();
 							}
 							nextReq(fileRequested);
@@ -148,6 +152,13 @@ public class OurStoryHTTPServer implements Runnable {
 					temp = temp.substring(0, temp.length()-9);
 					System.out.println(temp);
 					lastString = temp;
+					if(temp.isEmpty()){
+						
+				BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
+				writer.write("true");
+				writer.close();
+						return;
+					}
 					createHTML(temp);
 					iterateTally();
 					}
@@ -276,11 +287,14 @@ public class OurStoryHTTPServer implements Runnable {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(currentFile, true));
 			
 			if (storyTally == storyLength){randomizeFileName();
-				bw.write("<html><head><title>" + updated + "</title></head><body><p>");
+				BufferedWriter writer = new BufferedWriter(new FileWriter("public/listOfStories.txt",true));
+				writer.write(updated +"---"+ currentFile.substring(7,currentFile.length()) +" "+"\n");
+				writer.close();
+				bw.write("<html><head><title>" + updated + "</title></head><body><p><b>" + updated + "</b><p>");
 			} else if (storyTally == 0) {
-				bw.append(updated + "</p></body></html>");
+				bw.append("<p>" + updated + "</p></body></html>");
 			} else{
-				bw.append(" " + updated);
+				bw.append("<p>" + updated + "</p>");
 			}
 			bw.close();
 		} catch (IOException e) {
@@ -294,7 +308,7 @@ public class OurStoryHTTPServer implements Runnable {
 
 	private static String randomizeFileName() {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyy-hhmmss.SSS");
-		return new File(simpleDateFormat.format(new Date()) + ".txt").getName();
+		return new File(simpleDateFormat.format(new Date()) + ".html").getName();
 	}
 
 	public void getReq(String fileTemp) throws Exception {
