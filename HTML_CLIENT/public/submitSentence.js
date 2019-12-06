@@ -16,3 +16,17 @@ sendSentence.addEventListener("click", function() {
     location.href = "http://localhost:8080"
 });
 
+
+    var temp = new XMLHttpRequest();
+    temp.open('GET', "contr.txt", true);
+    temp.send();
+
+temp.onreadystatechange=function(){
+    if(temp.readyState==4 && temp.status==200){
+    response = temp.responseText;
+    lit = response.split('\n');
+        document.getElementById("newSentenceText").innerHTML = lit[0];
+        document.getElementById("prevSentence").innerHTML = "<b>"+lit[1]+"</b>";
+    }
+
+}

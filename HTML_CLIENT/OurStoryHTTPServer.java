@@ -56,6 +56,9 @@ public class OurStoryHTTPServer implements Runnable {
 			BufferedWriter writer = new BufferedWriter(new FileWriter("public/waiting.txt"));
 			writer.write("true");
 			writer.close();
+			BufferedWriter temp = new BufferedWriter(new FileWriter("public/contr.txt"));
+			temp.write("Enter a Title for this story!\nA good one will do");
+			temp.close();
 			// we listen until user halts server execution
 			while (true) {
 				OurStoryHTTPServer myServer = new OurStoryHTTPServer(serverConnect.accept());
@@ -92,6 +95,19 @@ public class OurStoryHTTPServer implements Runnable {
 			fileRequested = parse.nextToken().toLowerCase();
 			if(fileRequested.equals("/public/contribute.html")){
 				try{
+							if(storyTally == 10){
+								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
+								writer.write("Enter a Title for this story!\nA good one will do");
+								writer.close();
+							}else if(storyTally == 9){
+								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
+								writer.write("The Story is titled:\n"+ lastString);
+								writer.close();
+							}else{
+								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
+								writer.write("Previous Sentence:\n" + lastString);
+								writer.close();
+							}
 							nextReq(fileRequested);
 				}
 				catch(Exception e){System.out.println(e);}
@@ -306,5 +322,4 @@ public class OurStoryHTTPServer implements Runnable {
 		getReq(fileTemp);
 	}
 
-	// public synchronized void createText(String )
 }
