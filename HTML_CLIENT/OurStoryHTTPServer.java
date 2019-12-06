@@ -60,6 +60,8 @@ public class OurStoryHTTPServer implements Runnable {
 			BufferedWriter temp = new BufferedWriter(new FileWriter("public/contr.txt"));
 			temp.write("Enter a Title for this story!\nA good one will do");
 			temp.close();
+			BufferedWriter temp2 = new BufferedWriter(new FileWriter("public/listOfStories.txt"));
+			temp2.close();
 			// we listen until user halts server execution
 			while (true) {
 				OurStoryHTTPServer myServer = new OurStoryHTTPServer(serverConnect.accept());
