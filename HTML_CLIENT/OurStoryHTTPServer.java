@@ -27,12 +27,13 @@ public class OurStoryHTTPServer implements Runnable {
 	private BufferedReader in = null;
 	private PrintWriter out = null;
 	private BufferedOutputStream dataOut = null;
+	private static final int storyLength = 8;
 
 	// port to listen connection 
 	static final int PORT = 8080;
 	// Client Connection via Socket Class
 	private Socket connect;
-	public static int storyTally = 10;
+	public static int storyTally = storyLength;
 	public static String currentFile;
 	public static String lastString;
 	
@@ -95,11 +96,11 @@ public class OurStoryHTTPServer implements Runnable {
 			fileRequested = parse.nextToken().toLowerCase();
 			if(fileRequested.equals("/public/contribute.html")){
 				try{
-							if(storyTally == 10){
+							if(storyTally == storyLength){
 								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
 								writer.write("Enter a Title for this story!\nA good one will do");
 								writer.close();
-							}else if(storyTally == 9){
+							}else if(storyTally == storyLength-1){
 								BufferedWriter writer = new BufferedWriter(new FileWriter("public/contr.txt"));
 								writer.write("The Story is titled:\n"+ lastString);
 								writer.close();
@@ -234,7 +235,7 @@ public class OurStoryHTTPServer implements Runnable {
 	//this method is for iterating the tally
 	private static synchronized void iterateTally() {
 		if (storyTally == 0) {
-			storyTally = 10;
+			storyTally = storyLength;
 		} else {
 			storyTally -= 1;
 		}
@@ -271,10 +272,10 @@ public class OurStoryHTTPServer implements Runnable {
 
 	private static synchronized void createHTML(String updated) {
 		try {
-			if (storyTally == 10){setFileName();}
+			if (storyTally == storyLength){setFileName();}
 			BufferedWriter bw = new BufferedWriter(new FileWriter(currentFile, true));
 			
-			if (storyTally == 10){randomizeFileName();
+			if (storyTally == storyLength){randomizeFileName();
 				bw.write("<html><head><title>" + updated + "</title></head><body><p>");
 			} else if (storyTally == 0) {
 				bw.append(updated + "</p></body></html>");
